@@ -1,5 +1,5 @@
 """
-python scripts/create_db.py --data_path "data/processed_data.csv" --embed_model "medicalai/ClinicalBERT"
+python scripts/create_db.py --data_path "data/ovarian_cancer.csv" --embed_model "medicalai/ClinicalBERT"
 """
 
 from typing import List
@@ -8,9 +8,10 @@ import torch
 import argparse
 import sys
 import os
+from tqdm import tqdm
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from utils.helpers import load_model, embed
+from utils.helpers import load_model, clean_dataset
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Create embeddings for the given text")
@@ -25,13 +26,17 @@ if __name__ == '__main__':
     args = parse_args()
     embed_model: str = args.embed_model
     data_path: str = args.data_path
-    is_delete_collection: bool = args.is_delete_collection
+    is_delete_collection: bool = args.is_delete_collection   
     
-    print(f"Loading model {embed_model}")
-    print(f"Loading data from {data_path}")
-    print(f"Delete collection: {is_delete_collection}")
-    
-    
+    # Load & clean dataset
+    dataset = clean_dataset(data_path) 
+    print(f"Number of clinical trials: {len(dataset)}")
+        
     # Load Model 
     model, tokenizer = load_model(embed_model)
     print("Device:", model.device)
+    print("Chunk size:", model.config.max_position_embeddings)
+    
+    # Get embeddings
+    for trial in tqdm(dataset): 
+        print(trial)
