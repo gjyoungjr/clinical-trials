@@ -3,3 +3,4 @@ tqdm
 python-dotenv
 datasets
 torch # Used if running models locally
+chromadb
