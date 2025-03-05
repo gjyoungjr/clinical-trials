@@ -1,0 +1,80 @@
+{
+  "physicians": [
+    {
+      "id": "P001",
+      "name": "Dr. Alice Thompson",
+      "medical_specialties": ["Gynecologic Oncology", "Medical Oncology"],
+      "technical_skills": [
+        "Immunotherapy",
+        "Targeted Therapy",
+        "Biomarker Analysis"
+      ],
+      "years_of_experience": {
+        "Gynecologic Oncology": 15,
+        "Clinical Research": 12,
+        "Precision Medicine": 8
+      },
+      "research_interests": [
+        "PARP inhibitors",
+        "BRCA mutations",
+        "Immunotherapy advancements"
+      ]
+    },
+    {
+      "id": "P002",
+      "name": "Dr. Robert Chang",
+      "medical_specialties": ["Surgical Oncology", "Gynecologic Oncology"],
+      "technical_skills": [
+        "Minimally Invasive Surgery",
+        "Robotic-Assisted Surgery",
+        "Tissue Biopsy Techniques"
+      ],
+      "years_of_experience": {
+        "Surgical Oncology": 18,
+        "Clinical Trials": 10,
+        "Molecular Diagnostics": 5
+      },
+      "research_interests": [
+        "Novel surgical techniques",
+        "Early detection biomarkers",
+        "Tumor microenvironment"
+      ]
+    },
+    {
+      "id": "P003",
+      "name": "Dr. Emily Foster",
+      "medical_specialties": ["Medical Oncology", "Translational Research"],
+      "technical_skills": [
+        "Genomic Sequencing",
+        "CAR-T Cell Therapy",
+        "Pharmacogenomics"
+      ],
+      "years_of_experience": {
+        "Medical Oncology": 10,
+        "Clinical Trials": 7,
+        "Genomic Medicine": 6
+      },
+      "research_interests": [
+        "Personalized medicine",
+        "Drug resistance mechanisms",
+        "RNA-based therapies"
+      ]
+    },
+    {
+      "id": "P004",
+      "name": "Dr. Daniel Harris",
+      "medical_specialties": ["Radiation Oncology", "Oncologic Imaging"],
+      "technical_skills": ["Proton Therapy", "Brachytherapy", "Radiomics"],
+      "years_of_experience": {
+        "Radiation Oncology": 14,
+        "Clinical Trials": 9,
+        "Machine Learning in Oncology": 4
+      },
+      "research_interests": [
+        "AI-driven diagnostics",
+        "Radiation therapy optimization",
+        "Combination therapies"
+      ]
+    }
+  ]
+}
