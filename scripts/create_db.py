@@ -14,22 +14,37 @@ import chromadb
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils.helpers import load_model, clean_dataset
 
-
-def store_embeddings(model, texts: str , batch_size=30):
-    for i in tqdm(range(0, len(texts), batch_size), desc="Generating Embeddings"):
-        batch_texts = texts[i : i + batch_size]  # Get batch
-        model_max_len : int = model.config.max_position_embeddings
-
-        # Tokenize batch
+   
+def store_embeddings(model, data: List[dict], chromadb_collection, batch_size=30):
+    """Generate embeddings for the given data and store in the collection"""    
+    for trial in tqdm(range(0, len(data), batch_size), desc="Generating Embeddings"):
+        batch_data = data[trial: trial + batch_size]  # Get batch
+        
+        batch_texts = [entry['text'] for entry in batch_data]
+        model_max_len: int = model.config.max_position_embeddings
+        
+        # Tokenize the batch of texts
         tokens = tokenizer(batch_texts, return_tensors="pt", padding=True, truncation=True, max_length=512)['input_ids'].to(model.device)
         
         for chunk_idx, chunk_start in enumerate(range(0, len(tokens[0]), model_max_len)):
-            print(chunk_idx, chunk_start)
-            embedding: torch.Tensor = model(input_ids=tokens[:,chunk_start:chunk_start+model_max_len])[0][0].mean(dim=0).detach().cpu()
+            embedding: torch.Tensor = model(input_ids=tokens[:, chunk_start:chunk_start + model_max_len])[0][0].mean(dim=0).detach().cpu()
             embedding = torch.nn.functional.normalize(embedding, p=2, dim=0)
-            ## TODO: Make call to store embeddings in vector store
-        
-
+            
+            for idx, entry in enumerate(batch_data):
+                metadata = entry['metadata']                
+                # Upsert the embedding and metadata into chromadb_collection
+                chromadb_collection.upsert(
+                    embeddings=embedding.tolist(),
+                    metadatas={
+                        'chunk_idx': chunk_idx,
+                        'chunk_start': chunk_start,
+                        'chunk_end': chunk_start + model_max_len,
+                        **metadata  # Merge the current entry's metadata
+                    },
+                    documents=tokenizer.decode(tokens[0,chunk_start:chunk_start+model_max_len].tolist()),
+                    ids=f"{chunk_idx}",
+                )
+                
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Create embeddings for the given text")
     parser.add_argument("--data_path", type=str, help="Path to the data file")
@@ -65,5 +80,4 @@ if __name__ == '__main__':
     print("Device:", model.device)
     print("Chunk size:", model.config.max_position_embeddings)
     
-    ## TODO: Uncomment to store embeddings
-    # store_embeddings(model=model, texts=dataset)
+    store_embeddings(model=model, data=dataset, chromadb_collection=collection)

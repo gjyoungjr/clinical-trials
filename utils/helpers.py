@@ -30,19 +30,29 @@ def embed(text: str, model: AutoModel, tokenizer: AutoTokenizer) -> torch.Tensor
     return embedding
 
 
-
-def clean_dataset(data_path: str) -> str:
-    """Convert dataset into readbable text for better understanding"""
+def clean_dataset(data_path: str) -> list:
+    """Convert dataset into readable text with metadata for better understanding"""
     df = pd.read_csv(data_path)
-        
-    df["full_text"] = df.apply(lambda row: 
-    f"The clinical trial titled '{row['Study Title']}' is currently {row['Study Status']}. "
-    f"This {row['Study Type'].lower()} study started on {row['Start Date']} and is expected to end on {row['Completion Date']}. "
-    f"It is investigating {row['Conditions']} and involves the intervention(s): {row['Interventions']}. "
-    f"Primary outcome: {row['Primary Outcome Measures']}. "
-    f"Brief Summary: {row['Brief Summary']}.",
-    axis=1
-    )
-    texts = df["full_text"].tolist()
     
-    return texts
+    # Function to create the text and return a dictionary with metadata
+    def create_text_and_metadata(row):
+        text = (f"The clinical trial titled '{row['Study Title']}' is currently {row['Study Status']}. "
+                f"This {row['Study Type'].lower()} study started on {row['Start Date']} and is expected to end on {row['Completion Date']}. "
+                f"It is investigating {row['Conditions']} and involves the intervention(s): {row['Interventions']}. "
+                f"Primary outcome: {row['Primary Outcome Measures']}. "
+                f"Brief Summary: {row['Brief Summary']}.")
+        
+        # Return a dictionary with full text and metadata
+        metadata = {
+            "study_type": row['Study Type'],
+            "conditions": row['Conditions'],
+            "interventions": row['Interventions'],
+            
+        }
+        
+        return {"text": text, "metadata": metadata}
+    
+    # Apply the function to each row and collect the results
+    results = df.apply(create_text_and_metadata, axis=1).tolist()
+    
+    return results
