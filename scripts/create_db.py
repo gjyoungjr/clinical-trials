@@ -31,7 +31,9 @@ def store_embeddings(model, data: List[dict], chromadb_collection, batch_size=30
             embedding = torch.nn.functional.normalize(embedding, p=2, dim=0)
             
             for idx, entry in enumerate(batch_data):
-                metadata = entry['metadata']                
+                metadata = entry['metadata']  
+                
+                print(f"Upserting embedding for chunk {chunk_idx}: {embedding}")              
                 # Upsert the embedding and metadata into chromadb_collection
                 chromadb_collection.upsert(
                     embeddings=embedding.tolist(),
